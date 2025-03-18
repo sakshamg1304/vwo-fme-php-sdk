@@ -36,7 +36,7 @@ use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 interface IVWOClient {
     public function getFlag(string $featureKey, $context);
-    public function trackEvent(string $eventName, $context, array $eventProperties);
+    public function trackEvent(string $eventName, $context, $eventProperties);
     public function setAttribute(string $attributeKey, string $attributeValue, $context);
 }
 
@@ -104,7 +104,7 @@ class VWOClient implements IVWOClient {
         }
     }
 
-    public function trackEvent(string $eventName, $context, array $eventProperties) {
+    public function trackEvent(string $eventName, $context, $eventProperties) {
         $apiName = 'trackEvent';
 
         try {
