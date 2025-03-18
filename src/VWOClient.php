@@ -64,7 +64,7 @@ class VWOClient implements IVWOClient {
         LogManager::instance()->log(LogLevelEnum::$INFO,'VWO Client initialized');
     }
 
-    public function getFlag($featureKey, $context) {
+    public function getFlag(string $featureKey, $context) {
         $apiName = 'getFlag';
 
         $defaultReturnValue = new GetFlagResultUtil(
@@ -104,7 +104,7 @@ class VWOClient implements IVWOClient {
         }
     }
 
-    public function trackEvent($eventName, $context, $eventProperties) {
+    public function trackEvent(string $eventName, $context, array $eventProperties) {
         $apiName = 'trackEvent';
 
         try {
@@ -142,7 +142,7 @@ class VWOClient implements IVWOClient {
         }
     }
 
-    public function setAttribute($attributeKey, $attributeValue, $context ) {
+    public function setAttribute(string $attributeKey, string $attributeValue, $context ) {
         $apiName = 'setAttribute';
 
         try {
