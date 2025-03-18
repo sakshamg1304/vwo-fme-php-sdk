@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-namespace vwo\Packages\Logger\Enums; // Replace YourNamespace with your actual namespace
+namespace vwo\Packages\Logger\Enums;
 
 class LogLevelEnum {
-    public const TRACE = 'trace';
-    public const DEBUG = 'debug';
-    public const INFO = 'info';
-    public const WARN = 'warn';
-    public const ERROR = 'error';
+    public static $TRACE = 'trace';
+    public static $DEBUG = 'debug';
+    public static $INFO = 'info';
+    public static $WARN = 'warn';
+    public static $ERROR = 'error';
 }
 
 ?>

@@ -28,6 +28,7 @@ use vwo\Models\CampaignModel;
 use vwo\Models\User\ContextModel;
 use vwo\Models\VariationModel;
 use vwo\Utils\LogMessageUtil;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 interface ICampaignDecisionService {
     public function isUserPartOfCampaign($userId, $campaign);
@@ -64,7 +65,7 @@ class CampaignDecisionService implements ICampaignDecisionService {
 
         $campaignKey = $campaign->getType() === CampaignTypeEnum::AB ? $campaign->getKey() : $campaign->getName() . '_' . $campaign->getRuleKey();
 
-        LogManager::instance()->debug("User:{$userId} part of campaign {$campaignKey} ? " . ($isUserPart ? 'true' : 'false'));
+        LogManager::instance()->log(LogLevelEnum::$DEBUG,"User:{$userId} part of campaign {$campaignKey} ? " . ($isUserPart ? 'true' : 'false'));
 
         return $isUserPart;
     }
@@ -103,7 +104,7 @@ class CampaignDecisionService implements ICampaignDecisionService {
         
         $campaignKey = $campaign->getType() === CampaignTypeEnum::AB ? $campaign->getKey() : $campaign->getName() . '_' . $campaign->getRuleKey();
 
-        LogManager::instance()->debug("user:{$userId} for campaign:{$campaignKey} having percenttraffic:{$percentTraffic} got bucketValue as {$bucketValue} and hashvalue:{$hashValue}");
+        LogManager::instance()->log(LogLevelEnum::$DEBUG,"user:{$userId} for campaign:{$campaignKey} having percenttraffic:{$percentTraffic} got bucketValue as {$bucketValue} and hashvalue:{$hashValue}");
         $variations = $campaign->getVariations();
         return $this->getVariation($variations, $bucketValue);
     }
@@ -119,7 +120,7 @@ class CampaignDecisionService implements ICampaignDecisionService {
         }
         if (DataTypeUtil::isObject($segments) && !count((array)$segments)) {
             $campaignKey = $campaign->getType() === CampaignTypeEnum::AB ? $campaign->getKey() : $campaign->getName() . '_' . $campaign->getRuleKey();
-            LogManager::instance()->debug("For userId: {$context->getId()} of Campaign: {$campaignKey}, segment was missing, hence skipping segmentation");
+            LogManager::instance()->log(LogLevelEnum::$DEBUG,"For userId: {$context->getId()} of Campaign: {$campaignKey}, segment was missing, hence skipping segmentation");
             return true;
         } else {
             $customVariables = $context->getCustomVariables()!=null ? $context->getCustomVariables() : [];
@@ -129,10 +130,10 @@ class CampaignDecisionService implements ICampaignDecisionService {
             );
             $campaignKey = $campaign->getType() === CampaignTypeEnum::AB ? $campaign->getKey() : $campaign->getName() . '_' . $campaign->getRuleKey();
             if (!$preSegmentationResult) {
-                LogManager::instance()->info("Segmentation failed for userId: {$context->getId()} of Campaign: {$campaignKey}");
+                LogManager::instance()->log(LogLevelEnum::$INFO,"Segmentation failed for userId: {$context->getId()} of Campaign: {$campaignKey}");
                 return false;
             }
-            LogManager::instance()->info("Segmentation passed for userId: {$context->getId()} of Campaign: {$campaignKey}");
+            LogManager::instance()->log(LogLevelEnum::$INFO,"Segmentation passed for userId: {$context->getId()} of Campaign: {$campaignKey}");
             return true;
         }
     }

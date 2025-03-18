@@ -80,7 +80,9 @@ class VWOBuilder implements IVWOBuilder
     public function fetchSettings($force = false)
     {
         if ($this->isSettingsFetchInProgress) {
-            LogManager::instance()->info('Settings fetch in progress, waiting...');
+            //LogManager::instance()->log(LogLevelEnum::$INFO,'Settings fetch in progress, waiting...');
+            LogManager::instance()->log(LogLevelEnum::$INFO, 'Settings fetch in progress, waiting...');
+
             return;
         }
 
@@ -95,14 +97,14 @@ class VWOBuilder implements IVWOBuilder
         } catch (\Exception $error) {
             $this->isSettingsFetchInProgress = false;
             $errorMessage = $error instanceof \Exception ? $error->getMessage() : 'Unknown error';
-            LogManager::instance()->error("Error fetching settings: $errorMessage");
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"Error fetching settings: $errorMessage");
             throw $error;
         }
     }
 
     public function setSettings($settings): void
     {
-        LogManager::instance()->debug('API - setSettings called');
+        LogManager::instance()->log(LogLevelEnum::$DEBUG,'API - setSettings called');
         $this->originalSettings = $settings;
         $this->settings = new SettingsModel($settings);
         $this->settings = SettingsUtil::processSettings($this->settings);
@@ -112,14 +114,14 @@ class VWOBuilder implements IVWOBuilder
     public function getSettings($force = false)
     {
         if (!$force && $this->settings) {
-            LogManager::instance()->info('Using already fetched and cached settings');
+            LogManager::instance()->log(LogLevelEnum::$INFO,'Using already fetched and cached settings');
             return $this->settings;
         } else {
             try {
                 return $this->fetchSettings($force);
             } catch (\Exception $error) {
                 $errorMessage = $error instanceof \Exception ? $error->getMessage() : 'Unknown error';
-                LogManager::instance()->error("Error getting settings: $errorMessage");
+                LogManager::instance()->log(LogLevelEnum::$ERROR,"Error getting settings: $errorMessage");
                 throw $error;
             }
         }
@@ -148,19 +150,19 @@ class VWOBuilder implements IVWOBuilder
             return $this;
         } catch (\Exception $error) {
             $errorMessage = $error instanceof \Exception ? $error->getMessage() : 'Unknown error';
-            LogManager::instance()->error("Error setting Logger Instance: $errorMessage");
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"Error setting Logger Instance: $errorMessage");
         }
     }
 
     public function setAnalyticsCallback()
     {
         if (!is_object($this->options['analyticsEvent'])) {
-            LogManager::instance()->error('Analytics event should be an object');
+            LogManager::instance()->log(LogLevelEnum::$ERROR,'Analytics event should be an object');
             return $this;
         }
 
         if (!is_callable($this->options['analyticsEvent']['eventCallback'])) {
-            LogManager::instance()->error('Analytics event callback should be callable');
+            LogManager::instance()->log(LogLevelEnum::$ERROR,'Analytics event callback should be callable');
             return $this;
         }
 
@@ -168,7 +170,7 @@ class VWOBuilder implements IVWOBuilder
             isset($this->options['analyticsEvent']['isBatchingSupported']) &&
             !is_bool($this->options['analyticsEvent']['isBatchingSupported'])
         ) {
-            LogManager::instance()->error('Analytics event batching support should be a boolean');
+            LogManager::instance()->log(LogLevelEnum::$ERROR,'Analytics event batching support should be a boolean');
             return $this;
         }
         return $this;
@@ -192,7 +194,7 @@ class VWOBuilder implements IVWOBuilder
             ) ||
             !is_callable($this->options['batchEvents']['flushCallback'])
         ) {
-            LogManager::instance()->error('Invalid batchEvents config');
+            LogManager::instance()->log(LogLevelEnum::$ERROR,'Invalid batchEvents config');
             return $this;
         }
 
@@ -211,7 +213,7 @@ class VWOBuilder implements IVWOBuilder
         }
 
         if ($this->options['pollInterval'] < 0) {
-            LogManager::instance()->error('Poll interval should be greater than 1');
+            LogManager::instance()->log(LogLevelEnum::$ERROR,'Poll interval should be greater than 1');
             return $this;
         }
         if (!$this->settingsSetManually){
@@ -235,11 +237,11 @@ class VWOBuilder implements IVWOBuilder
                     $thisReference->originalSettings = $latestSettingsFile;
                     $clonedSettings = FunctionUtil::cloneObject($latestSettingsFile);
                     $thisReference->settings = SettingsUtil::processSettings($clonedSettings);
-                    LogManager::instance()->info('Settings file updated');
+                    LogManager::instance()->log(LogLevelEnum::$INFO,'Settings file updated');
                     SettingsUtil::setSettingsAndAddCampaignsToRules($clonedSettings, $this->vwoInstance);
                 }
             } catch (\Exception $error) {
-                LogManager::instance()->error('Error while fetching VWO settings with polling');
+                LogManager::instance()->log(LogLevelEnum::$ERROR,'Error while fetching VWO settings with polling');
             }
         }
     }

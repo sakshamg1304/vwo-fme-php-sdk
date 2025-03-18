@@ -28,6 +28,7 @@ use vwo\Models\FeatureModel;
 use vwo\Models\User\ContextVWOModel;
 use vwo\Services\SettingsService;
 use vwo\Utils\DataTypeUtil;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class SegmentationManager {
     private static $instance;
@@ -87,7 +88,7 @@ class SegmentationManager {
                     $vwoData = GatewayServiceUtil::getFromGatewayService($params, UrlEnum::GET_USER_DATA);
                     $context->setVwo((new ContextVWOModel())->modelFromDictionary($vwoData));
                 } catch (\Exception $err) {
-                    LogManager::instance()->error('Error in setting contextual data for segmentation. Got error: ' . $err->getMessage());
+                    LogManager::instance()->log(LogLevelEnum::$ERROR,'Error in setting contextual data for segmentation. Got error: ' . $err->getMessage());
                 }
             }
         }

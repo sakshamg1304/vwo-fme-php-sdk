@@ -27,27 +27,27 @@ class ConsoleTransport implements Logger {
 
     public function __construct($config = []) {
         $this->config = $config;
-        $this->level = $this->config['level'] ?? LogLevelEnum::ERROR;
+        $this->level = $this->config['level'] ?? LogLevelEnum::$ERROR;
     }
 
     public function trace($message): void {
-        $this->log(LogLevelEnum::TRACE, $message);
+        $this->log(LogLevelEnum::$TRACE, $message);
     }
 
     public function debug($message): void {
-        $this->log(LogLevelEnum::DEBUG, $message);
+        $this->log(LogLevelEnum::$DEBUG, $message);
     }
 
     public function info($message): void {
-        $this->log(LogLevelEnum::INFO, $message);
+        $this->log(LogLevelEnum::$INFO, $message);
     }
 
     public function warn($message): void {
-        $this->log(LogLevelEnum::WARN, $message);
+        $this->log(LogLevelEnum::$WARN, $message);
     }
 
     public function error($message): void {
-        $this->log(LogLevelEnum::ERROR, $message);
+        $this->log(LogLevelEnum::$ERROR, $message);
     }
 
     public function log($level, $message): void {

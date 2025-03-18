@@ -27,6 +27,7 @@ use vwo\Services\HooksService;
 use vwo\Utils\FunctionUtil as FunctionUtil;
 use vwo\Utils\NetworkUtil as NetworkUtil;
 use vwo\Utils\LogMessageUtil as LogMessageUtil;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 // Interface for tracking functionality
 interface ITrack
@@ -69,7 +70,7 @@ class TrackEvent implements ITrack
         }
 
         // Log an error if the event does not exist
-        LogManager::instance()->error("Event '$eventName' not found in any of the features");
+        LogManager::instance()->log(LogLevelEnum::$ERROR,"Event '$eventName' not found in any of the features");
 
 
         return [$eventName => false];

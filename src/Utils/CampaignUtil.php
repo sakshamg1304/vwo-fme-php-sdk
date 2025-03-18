@@ -25,6 +25,7 @@ use vwo\Models\FeatureModel;
 use vwo\Models\VariationModel;
 use vwo\Models\SettingsModel;
 use vwo\Packages\Logger\Core\LogManager;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class CampaignUtil
 {
@@ -44,7 +45,7 @@ class CampaignUtil
                 $stepFactor = self::assignRangeValues($variation, $currentAllocation);
                 $currentAllocation += $stepFactor;
 
-                LogManager::instance()->info(
+                LogManager::instance()->log(LogLevelEnum::$INFO,
                     sprintf(
                         "VARIATION_RANGE_ALLOCATION: Variation:%s of Campaign:%s having weight:%s got bucketing range: ( %s - %s )",
                         $variation->getKey(),
@@ -370,7 +371,7 @@ class CampaignUtil
             $variation->setStartRange(1);
             $variation->setEndRange($endRange);
 
-            LogManager::instance()->info(
+            LogManager::instance()->log(LogLevelEnum::$INFO,
                 sprintf(
                     "VARIATION_RANGE_ALLOCATION: Variation:%s of Campaign:%s got bucketing range: ( 1 - %s )",
                     $variation->getKey(),

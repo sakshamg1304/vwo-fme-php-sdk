@@ -19,6 +19,7 @@
 namespace vwo\Packages\Logger;
 
 use vwo\Enums\LogLevelEnum;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 interface ILogMessageBuilder {
     public function formatMessage($level, $message): string;
@@ -58,11 +59,11 @@ class LogMessageBuilder implements ILogMessageBuilder {
         ];
 
         $logLevelColorInfoEnum = [
-            LogLevelEnum::TRACE => "{$ansiColorEnum['BOLD']}{$ansiColorEnum['WHITE']}{$upperCaseLevel}{$ansiColorEnum['RESET']}",
-            LogLevelEnum::DEBUG => "{$ansiColorEnum['BOLD']}{$ansiColorEnum['LIGHTBLUE']}{$upperCaseLevel} {$ansiColorEnum['RESET']}",
-            LogLevelEnum::INFO => "{$ansiColorEnum['BOLD']}{$ansiColorEnum['CYAN']}{$upperCaseLevel}  {$ansiColorEnum['RESET']}",
-            LogLevelEnum::WARN => "{$ansiColorEnum['BOLD']}{$ansiColorEnum['YELLOW']}{$upperCaseLevel}  {$ansiColorEnum['RESET']}",
-            LogLevelEnum::ERROR => "{$ansiColorEnum['BOLD']}{$ansiColorEnum['RED']}{$upperCaseLevel} {$ansiColorEnum['RESET']}"
+            LogLevelEnum::$TRACE => "{$ansiColorEnum['BOLD']}{$ansiColorEnum['WHITE']}{$upperCaseLevel}{$ansiColorEnum['RESET']}",
+            LogLevelEnum::$DEBUG => "{$ansiColorEnum['BOLD']}{$ansiColorEnum['LIGHTBLUE']}{$upperCaseLevel} {$ansiColorEnum['RESET']}",
+            LogLevelEnum::$INFO => "{$ansiColorEnum['BOLD']}{$ansiColorEnum['CYAN']}{$upperCaseLevel}  {$ansiColorEnum['RESET']}",
+            LogLevelEnum::$WARN => "{$ansiColorEnum['BOLD']}{$ansiColorEnum['YELLOW']}{$upperCaseLevel}  {$ansiColorEnum['RESET']}",
+            LogLevelEnum::$ERROR => "{$ansiColorEnum['BOLD']}{$ansiColorEnum['RED']}{$upperCaseLevel} {$ansiColorEnum['RESET']}"
         ];
 
         return $logLevelColorInfoEnum[$level] ?? "{$ansiColorEnum['BOLD']}{$ansiColorEnum['RED']}INVALID{$ansiColorEnum['RESET']}";

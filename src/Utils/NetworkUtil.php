@@ -31,6 +31,7 @@ use vwo\Packages\NetworkLayer\Models\RequestModel;
 use vwo\Utils\ComposerUtil;
 use Exception;
 use vwo\Services\SettingsService;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class NetworkUtil {
   public function getBasePropertiesForBulk($accountId, $userId) {
@@ -55,7 +56,7 @@ class NetworkUtil {
         try {
             $sdkVersion = ComposerUtil::getSdkVersion();
         } catch (Exception $e) {
-            LogManager::instance()->error($e->getMessage());
+            LogManager::instance()->log(LogLevelEnum::$ERROR,$e->getMessage());
             $sdkVersion = Constants::SDK_VERSION; // Use the constant as a fallback
         }
 
@@ -80,7 +81,7 @@ class NetworkUtil {
         try {
             $sdkVersion = ComposerUtil::getSdkVersion();
         } catch (Exception $e) {
-            LogManager::instance()->error($e->getMessage());
+            LogManager::instance()->log(LogLevelEnum::$ERROR,$e->getMessage());
             $sdkVersion = Constants::SDK_VERSION; // Use the constant as a fallback
         }
 
@@ -124,7 +125,7 @@ class NetworkUtil {
         try {
             $sdkVersion = ComposerUtil::getSdkVersion();
         } catch (Exception $e) {
-            LogManager::instance()->error($e->getMessage());
+            LogManager::instance()->log(LogLevelEnum::$ERROR,$e->getMessage());
             $sdkVersion = Constants::SDK_VERSION; // Use the constant as a fallback
         }
 
@@ -169,7 +170,7 @@ class NetworkUtil {
         $properties['d']['event']['props']['variation'] = $variationId;
         $properties['d']['event']['props']['isFirst'] = 1;
 
-        LogManager::instance()->debug(
+        LogManager::instance()->log(LogLevelEnum::$DEBUG,
             "IMPRESSION_FOR_EVENT_ARCH_TRACK_USER: Impression built for vwo_variationShown event for Account ID:{$settings->getAccountId()}, User ID:{$userId}, and Campaign ID:{$campaignId}"
         );
 
@@ -188,7 +189,7 @@ class NetworkUtil {
             }
         }
 
-        LogManager::instance()->debug(
+        LogManager::instance()->log(LogLevelEnum::$DEBUG,
             "IMPRESSION_FOR_EVENT_ARCH_TRACK_GOAL: Impression built for {$eventName} event for Account ID:{$settings->getAccountId()}, User ID:{$userId}"
         );
 
@@ -201,7 +202,7 @@ class NetworkUtil {
         $properties['d']['event']['props'][Constants::VWO_FS_ENVIRONMENT] = $settings->getSdkKey();
         $properties['d']['visitor']['props'][$attributeKey] = $attributeValue;
 
-        LogManager::instance()->debug(
+        LogManager::instance()->log(LogLevelEnum::$DEBUG,
             "IMPRESSION_FOR_EVENT_ARCH_SYNC_VISITOR_PROP: Impression built for {$eventName} event for Account ID:{$settings->getAccountId()}, User ID:{$userId}"
         );
 
@@ -240,7 +241,7 @@ class NetworkUtil {
             return $response;
         } catch (Exception $err) {
             $errorMessage = $err instanceof \Exception ? $err->getMessage() : 'Unknown error';
-            LogManager::instance()->error("Error occurred while sending POST request $errorMessage");
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"Error occurred while sending POST request $errorMessage");
         }
     }
 
@@ -262,7 +263,7 @@ class NetworkUtil {
             return $response; // Return the response model
         } catch (Exception $err) {
             $errorMessage = $err instanceof \Exception ? $err->getMessage() : 'Unknown error';
-            LogManager::instance()->error("Error occurred while sending GET request $errorMessage ");
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"Error occurred while sending GET request $errorMessage ");
             return null;
         }
     }

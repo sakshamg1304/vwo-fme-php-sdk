@@ -24,6 +24,7 @@ use vwo\Enums\StorageEnum;
 use vwo\Models\FeatureModel;
 use vwo\Models\VariationModel;
 use vwo\Models\User\ContextModel;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 interface IStorageDecorator
 {
@@ -67,22 +68,22 @@ class StorageDecorator implements IStorageDecorator
         $experimentVariationId = $data['experimentVariationId'] ?? null;
 
         if (!$featureKey) {
-            LogManager::instance()->error("Error storing data: featureKey is invalid.");
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"Error storing data: featureKey is invalid.");
             return false;
         }
 
         if ($context->getId() == null) {
-            LogManager::instance()->error("Error storing data: Context or Context.id is invalid.");
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"Error storing data: Context or Context.id is invalid.");
             return false;
         }
 
         if ($rolloutKey && !$experimentKey && !$rolloutVariationId) {
-            LogManager::instance()->error("Error storing data: Variation (rolloutKey, experimentKey or rolloutVariationId) is invalid.");
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"Error storing data: Variation (rolloutKey, experimentKey or rolloutVariationId) is invalid.");
             return false;
         }
 
         if ($experimentKey && !$experimentVariationId) {
-            LogManager::instance()->error("Error storing data: Variation (experimentKey or experimentVariationId) is invalid.");
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"Error storing data: Variation (experimentKey or experimentVariationId) is invalid.");
             return false;
         }
 

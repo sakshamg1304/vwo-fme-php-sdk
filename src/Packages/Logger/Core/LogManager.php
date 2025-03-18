@@ -40,12 +40,13 @@ class LogManager extends Logger implements ILogManager {
     private $config;
     private $name = 'VWO Logger';
     private $requestId;
-    private $level = LogLevelEnum::ERROR;
+    private $level ;
     private $prefix = 'VWO-SDK';
     private $dateTimeFormat; // Updated
 
     public function __construct($config = []) {
         $this->config = $config;
+        $this->level = LogLevelEnum::$ERROR;
 
         // Updated to use a closure for dateTimeFormat
         $this->dateTimeFormat = function() {
@@ -102,23 +103,27 @@ class LogManager extends Logger implements ILogManager {
     }
 
     public function trace($message): void {
-        $this->transportManager->log(LogLevelEnum::TRACE, $message);
+        $this->transportManager->log(LogLevelEnum::$TRACE, $message);
     }
 
     public function debug($message): void {
-        $this->transportManager->log(LogLevelEnum::DEBUG, $message);
+        $this->transportManager->log(LogLevelEnum::$DEBUG, $message);
     }
 
     public function info($message): void {
-        $this->transportManager->log(LogLevelEnum::INFO, $message);
+        $this->transportManager->log(LogLevelEnum::$INFO, $message);
     }
 
     public function warn($message): void {
-        $this->transportManager->log(LogLevelEnum::WARN, $message);
+        $this->transportManager->log(LogLevelEnum::$WARN, $message);
     }
 
     public function error($message): void {
-        $this->transportManager->log(LogLevelEnum::ERROR, $message);
+        $this->transportManager->log(LogLevelEnum::$ERROR, $message);
+    }
+
+    public function log($level, $message): void {
+        $this->transportManager->log($level, $message);
     }
 }
 ?>

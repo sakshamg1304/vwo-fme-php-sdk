@@ -37,6 +37,7 @@ use vwo\Utils\FunctionUtil;
 use vwo\Utils\ImpressionUtil;
 use vwo\Utils\GetFlagResultUtil;
 use vwo\Utils\RuleEvaluationUtil;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class GetFlag
 {
@@ -82,7 +83,7 @@ class GetFlag
                 );
 
                 if ($variation) {
-                    LogManager::instance()->info(sprintf(
+                    LogManager::instance()->log(LogLevelEnum::$INFO,sprintf(
                         "Variation %s found in storage for the user %s for the experiment: %s",
                         $variation->getKey(),
                         $context->getId(),
@@ -100,14 +101,14 @@ class GetFlag
             );
 
             if ($variation) {
-                LogManager::instance()->info(sprintf(
+                LogManager::instance()->log(LogLevelEnum::$INFO,sprintf(
                     "Variation %s found in storage for the user %s for the rollout experiment: %s",
                     $variation->getKey(),
                     $context->getId(),
                     $storedData['rolloutKey']
                 ));
 
-                LogManager::instance()->debug(sprintf(
+                LogManager::instance()->log(LogLevelEnum::$DEBUG,sprintf(
                     "Rollout rule got passed for user %s. Hence, evaluating experiments",
                     $context->getId()
                 ));
@@ -125,7 +126,7 @@ class GetFlag
         }
 
         if (!DataTypeUtil::isObject($feature)) {
-            LogManager::instance()->error(sprintf(
+            LogManager::instance()->log(LogLevelEnum::$ERROR,sprintf(
                 "Feature not found for the key: %s",
                 $featureKey
             ));
@@ -185,7 +186,7 @@ class GetFlag
                 }
             }
         } else if (count($rollOutRules) === 0) {
-            LogManager::instance()->debug("No Rollout rules present for the feature. Hence, checking experiment rules");
+            LogManager::instance()->log(LogLevelEnum::$DEBUG,"No Rollout rules present for the feature. Hence, checking experiment rules");
             $shouldCheckForExperimentsRules = true;
         }
 
@@ -266,7 +267,7 @@ class GetFlag
         // Send data for Impact Campaign, if defined
         if ($feature->getImpactCampaign()->getCampaignId()) {
             $status = $isEnabled ? 'enabled' : 'disabled';
-            LogManager::instance()->info(sprintf(
+            LogManager::instance()->log(LogLevelEnum::$INFO,sprintf(
                 "Tracking feature: %s being %s for Impact Analysis Campaign for the user %s",
                 $featureKey,
                 $status,
