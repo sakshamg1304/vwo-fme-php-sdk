@@ -49,7 +49,7 @@ class SegmentationManager {
      * Attaches an evaluator to the manager, or creates a new one if none is provided.
      * @param SegmentEvaluator|null $evaluator Optional evaluator to attach.
      */
-    public function attachEvaluator($evaluator = null): void {
+    public function attachEvaluator($evaluator = null) {
         $this->evaluator = $evaluator ?? new SegmentEvaluator();
     }
 
@@ -59,7 +59,7 @@ class SegmentationManager {
      * @param FeatureModel $feature The feature data including segmentation needs.
      * @param ContextModel $context The context data for the evaluation.
      */
-    public function setContextualData($settings, $feature, $context): void {
+    public function setContextualData($settings, $feature, $context) {
         $this->attachEvaluator(); // Ensure a fresh evaluator instance
         $this->evaluator->settings = $settings; // Set settings in evaluator
         $this->evaluator->context = $context; // Set context in evaluator

@@ -102,7 +102,7 @@ class VWOBuilder implements IVWOBuilder
         }
     }
 
-    public function setSettings($settings): void
+    public function setSettings($settings)
     {
         LogManager::instance()->log(LogLevelEnum::$DEBUG,'API - setSettings called');
         $this->originalSettings = $settings;

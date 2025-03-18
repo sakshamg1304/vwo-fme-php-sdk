@@ -152,7 +152,7 @@ class SegmentEvaluator implements Segmentation
         return true;
     }
 
-    public function addLocationValuesToMap($dsl, &$locationMap): void
+    public function addLocationValuesToMap($dsl, &$locationMap)
     {
         if (isset($dsl->{SegmentOperatorValueEnum::COUNTRY})) {
             $locationMap[SegmentOperatorValueEnum::COUNTRY] = $dsl->{SegmentOperatorValueEnum::COUNTRY};
