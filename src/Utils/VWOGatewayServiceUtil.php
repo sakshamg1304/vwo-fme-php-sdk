@@ -24,6 +24,7 @@ use vwo\Packages\NetworkLayer\Models\ResponseModel;
 use vwo\Enums\UrlEnum;
 use vwo\Services\UrlService;
 use vwo\Packages\Logger\Core\LogManager;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class VWOGatewayServiceUtil {
     public static function getFromVWOGatewayService($queryParams, $endpoint) {
@@ -31,7 +32,7 @@ class VWOGatewayServiceUtil {
         $networkInstance = NetworkManager::Instance();
 
         if (UrlService::getBaseUrl() === UrlEnum::BASE_URL) {
-            LogManager::instance()->info('Invalid URL. Please provide a valid URL for vwo helper VWOGatewayService');
+            LogManager::instance()->log(LogLevelEnum::$INFO,'Invalid URL. Please provide a valid URL for vwo helper VWOGatewayService');
             return false;
         }
 
@@ -52,11 +53,11 @@ class VWOGatewayServiceUtil {
             if ($response instanceof ResponseModel) {
                 return $response->getData();
             } else {
-                LogManager::instance()->error('Failed to get a valid response from the network request.');
+                LogManager::instance()->log(LogLevelEnum::$ERROR,'Failed to get a valid response from the network request.');
                 return false;
             }
         } catch (\Exception $err) {
-            LogManager::instance()->error('Error occurred while sending GET request: ' . $err->getMessage());
+            LogManager::instance()->log(LogLevelEnum::$ERROR,'Error occurred while sending GET request: ' . $err->getMessage());
             return false;
         }
     }

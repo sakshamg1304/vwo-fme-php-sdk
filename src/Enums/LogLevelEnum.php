@@ -19,10 +19,10 @@
 namespace vwo\Enums;
 
 class LogLevelEnum {
-    const TRACE = 'trace';
-    const DEBUG = 'debug';
-    const INFO = 'info';
-    const WARN = 'warn';
-    const ERROR = 'error';
+    public static $TRACE = 'trace';
+    public static $DEBUG = 'debug';
+    public static $INFO = 'info';
+    public static $WARN = 'warn';
+    public static $ERROR = 'error';
 }
 ?>

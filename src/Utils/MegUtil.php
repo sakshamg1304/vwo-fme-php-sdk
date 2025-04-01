@@ -37,6 +37,7 @@ use vwo\Utils\DataTypeUtil;
 use vwo\Utils\DecisionUtil;
 use vwo\Utils\FunctionUtil;
 use vwo\Utils\LogMessageUtil;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 
 class MegUtil
@@ -184,7 +185,7 @@ class MegUtil
             return false;
         }
 
-        LogManager::instance()->debug("MEG: No rollout rule found for feature {$feature->getKey()}, evaluating experiments...");
+        LogManager::instance()->log(LogLevelEnum::$DEBUG,"MEG: No rollout rule found for feature {$feature->getKey()}, evaluating experiments...");
         return true;
     }
 
@@ -218,7 +219,7 @@ class MegUtil
                             $storedData['experimentVariationId']
                         );
                         if ($variation) {
-                            LogManager::instance()->debug("MEG: Campaign {$storedData['experimentKey']} found in storage for user {$context['user']['id']}");
+                            LogManager::instance()->log(LogLevelEnum::$DEBUG,"MEG: Campaign {$storedData['experimentKey']} found in storage for user {$context['user']['id']}");
 
                             if (array_search($campaign->getKey(), array_column($eligibleCampaignsWithStorage, 'key')) === false) {
                                 $eligibleCampaignsWithStorage[] = $campaign;
@@ -237,7 +238,7 @@ class MegUtil
                     (new CampaignDecisionService())->isUserPartOfCampaign($context->getId(), $campaign)
                 ) {
                     $campaignKey = $campaign->getType() === CampaignTypeEnum::AB ? $campaign->getKey() : $campaign->getName() . '_' . $campaign->getRuleKey();
-                    LogManager::instance()->info("Campaign {$campaignKey} is eligible for user ID:{$context->getId()}");
+                    LogManager::instance()->log(LogLevelEnum::$INFO,"Campaign {$campaignKey} is eligible for user ID:{$context->getId()}");
 
                     $eligibleCampaigns[] = $campaign;
                     continue;
@@ -250,7 +251,7 @@ class MegUtil
         return [
             'eligibleCampaigns' => $eligibleCampaigns,
             'eligibleCampaignsWithStorage' => $eligibleCampaignsWithStorage,
-            'inEligibleCampaigns' => $inEligibleCampaigns,
+            'inEligibleCampaigns' => $inEligibleCampaigns
         ];
     }
 
@@ -278,7 +279,7 @@ class MegUtil
         // if eligibleCampaignsWithStorage has only one campaign, then that campaign is the winner
         if (count($eligibleCampaignsWithStorage) === 1) {
             $winnerCampaign = $eligibleCampaignsWithStorage[0];
-            LogManager::instance()->info(
+            LogManager::instance()->log(LogLevelEnum::$INFO,
                 "MEG: Campaign " . 
                 ($eligibleCampaignsWithStorage[0]->getType() === CampaignTypeEnum::AB
                     ? $eligibleCampaignsWithStorage[0]->getKey()
@@ -312,7 +313,7 @@ class MegUtil
             if (count($eligibleCampaigns) === 1) {
                 $winnerCampaign = $eligibleCampaigns[0];
                 $campaignKey = $eligibleCampaigns[0]->getType() === CampaignTypeEnum::AB ? $eligibleCampaigns[0]->getKey() : $eligibleCampaigns[0]->getName() . '_' . $eligibleCampaigns[0]->getRuleKey();
-                LogManager::instance()->info("MEG: Campaign {$campaignKey} is the winner for group {$groupId} for user ID:{$context->getId()}");
+                LogManager::instance()->log(LogLevelEnum::$INFO,"MEG: Campaign {$campaignKey} is the winner for group {$groupId} for user ID:{$context->getId()}");
             } elseif (count($eligibleCampaigns) > 1 && $megAlgoNumber === Constants::RANDOM_ALGO) {
                 $winnerCampaign = self::normalizeWeightsAndFindWinningCampaign($eligibleCampaigns, $context, $campaignIds, $groupId, $storageService);
             } elseif (count($eligibleCampaigns) > 1) {
@@ -371,7 +372,7 @@ class MegUtil
 
         if ($winnerCampaign) {
             $campaignKey = $winnerCampaign->getType() === CampaignTypeEnum::AB ? $winnerCampaign->getKey() : $winnerCampaign->getKey() . '_' . $winnerCampaign->getRuleKey();
-            LogManager::instance()->info("MEG: Campaign {$campaignKey} is the winner for group {$groupId} for user ID:{$context->getId()} using random algorithm");
+            LogManager::instance()->log(LogLevelEnum::$INFO,"MEG: Campaign {$campaignKey} is the winner for group {$groupId} for user ID:{$context->getId()} using random algorithm");
             (new StorageDecorator())->setDataInStorage(
                 [
                     'featureKey' => "_vwo_meta_meg_{$groupId}",
@@ -388,7 +389,7 @@ class MegUtil
             }
         }
         else {
-            LogManager::instance()->info("No winner campaign found for MEG group: {$groupId}");
+            LogManager::instance()->log(LogLevelEnum::$INFO,"No winner campaign found for MEG group: {$groupId}");
         }
         return null;
     }
@@ -481,9 +482,9 @@ class MegUtil
 
         if ($winnerCampaign) {
             $campaignKey = $winnerCampaign->getType() === CampaignTypeEnum::AB ? $winnerCampaign->getKey() : $winnerCampaign->getKey() . '_' . $winnerCampaign->getRuleKey();
-            LogManager::instance()->info("MEG: Campaign {$campaignKey} is the winner for group {$groupId} for user ID:{$context->getId()} using advanced algorithm");
+            LogManager::instance()->log(LogLevelEnum::$INFO,"MEG: Campaign {$campaignKey} is the winner for group {$groupId} for user ID:{$context->getId()} using advanced algorithm");
         } else {
-            LogManager::instance()->info("No winner campaign found for MEG group: {$groupId}");
+            LogManager::instance()->log(LogLevelEnum::$INFO,"No winner campaign found for MEG group: {$groupId}");
         }
 
         if ($winnerCampaign) {

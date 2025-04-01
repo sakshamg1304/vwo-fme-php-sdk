@@ -31,6 +31,7 @@ use vwo\Services\StorageService;
 use vwo\Packages\DecisionMaker\DecisionMaker;
 use vwo\Packages\SegmentationEvaluator\Core\SegmentationManager;
 use vwo\Decorators\StorageDecorator;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class DecisionUtil
 {
@@ -62,7 +63,7 @@ class DecisionUtil
                     return [true, $whitelistedVariation];
                 }
             } else {
-                LogManager::instance()->info(
+                LogManager::instance()->log(LogLevelEnum::$INFO,
                     "WHITELISTING_SKIPPED: Whitelisting is not used for Campaign:{$campaign->getRuleKey()}, hence skipping evaluating whitelisting for User ID:{$context->getId()}"
                 );
             }
@@ -103,7 +104,7 @@ class DecisionUtil
                     $storageService
                 );
                 if ($storedData && isset($storedData['experimentKey']) && isset($storedData['experimentId'])) {
-                    LogManager::instance()->info(
+                    LogManager::instance()->log(LogLevelEnum::$INFO,
                         "MEG_CAMPAIGN_FOUND_IN_STORAGE: Campaign:{$storedData['experimentKey']} found in storage for User:{$context->getId()}"
                     );
                     if ($storedData['experimentId'] == $campaignId) {
@@ -172,13 +173,13 @@ class DecisionUtil
         $variation = (new CampaignDecisionService())->getVariationAlloted($userId, $settings->getAccountId(), $campaign);
         $campaignKey = $campaign->getType() === CampaignTypeEnum::AB ? $campaign->getKey() : $campaign->getName() . '_' . $campaign->getRuleKey();
         if (!$variation) {
-            LogManager::instance()->info(
+            LogManager::instance()->log(LogLevelEnum::$INFO,
                 "USER_CAMPAIGN_BUCKET_INFO: Campaign:{$campaignKey} User:{$userId} did not get any variation"
             );
             return null;
         }
 
-        LogManager::instance()->info(
+        LogManager::instance()->log(LogLevelEnum::$INFO,
             "USER_CAMPAIGN_BUCKET_INFO: Campaign:{$campaignKey} User:{$userId} got variation:{$variation->getKey()}"
         );
 
@@ -196,7 +197,7 @@ class DecisionUtil
         $variationString = $whitelistingResult ? $whitelistingResult['variation']->getKey() : '';
         
         $campaignKey = $campaign->getType() === CampaignTypeEnum::AB ? $campaign->getKey() : $campaign->getName() . '_' . $campaign->getRuleKey();
-        LogManager::instance()->info(
+        LogManager::instance()->log(LogLevelEnum::$INFO,
             "WHITELISTING_STATUS: Campaign:{$campaignKey} User:{$context->getId()} Status:{$status} Variation:{$variationString}"
         );
 
@@ -210,7 +211,7 @@ class DecisionUtil
         foreach ($campaign->getVariations() as $variation) {
             if (is_object($variation->getSegments()) && empty((array)$variation->getSegments())) {
                 $campaignKey = $campaign->getType() === CampaignTypeEnum::AB ? $campaign->getKey() : $campaign->getName() . '_' . $campaign->getRuleKey();
-                LogManager::instance()->info(
+                LogManager::instance()->log(LogLevelEnum::$INFO,
                     "WHITELISTING_SKIP: Campaign:{$campaignKey} User:{$context->getId()} Skipped for variation: {$variation->getKey()}"
                 );
                 continue;

@@ -32,10 +32,11 @@ use vwo\Api\SetAttribute;
 use vwo\Models\SettingsModel;
 use vwo\Models\User\ContextModel;
 use vwo\Utils\SettingsUtil;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 interface IVWOClient {
     public function getFlag(string $featureKey, $context);
-    public function trackEvent(string $eventName, $context, array $eventProperties);
+    public function trackEvent(string $eventName, $context, $eventProperties);
     public function setAttribute(string $attributeKey, string $attributeValue, $context);
 }
 
@@ -60,10 +61,10 @@ class VWOClient implements IVWOClient {
             CampaignUtil::setVariationAllocation($campaign);
         }
         SettingsUtil::setSettingsAndAddCampaignsToRules($settings, $this);
-        LogManager::instance()->info('VWO Client initialized');
+        LogManager::instance()->log(LogLevelEnum::$INFO,'VWO Client initialized');
     }
 
-    public function getFlag($featureKey = null, $context = null) {
+    public function getFlag(string $featureKey, $context) {
         $apiName = 'getFlag';
 
         $defaultReturnValue = new GetFlagResultUtil(
@@ -75,21 +76,21 @@ class VWOClient implements IVWOClient {
         try {
             $hookManager = new HooksService($this->options);
 
-            LogManager::instance()->debug("API Called: $apiName");
+            LogManager::instance()->log(LogLevelEnum::$DEBUG,"API Called: $apiName");
 
             if (!DataTypeUtil::isString($featureKey) || $featureKey == null) {
-                LogManager::instance()->error(
+                LogManager::instance()->log(LogLevelEnum::$ERROR,
                     sprintf('FeatureKey passed to %s API is not of valid type.', $apiName));
                 throw new \TypeError('TypeError: variableSpecifier should be a valid string');
             }
 
             if (!$this->settings) {
-                LogManager::instance()->error(sprintf('settings are not valid. Got %s', gettype($this->settings)));
+                LogManager::instance()->log(LogLevelEnum::$ERROR,sprintf('settings are not valid. Got %s', gettype($this->settings)));
                 throw new \Error('Invalid Settings');
             }
 
             if (!isset($context['id']) || empty($context['id'])) {
-                LogManager::instance()->error('Context must contain a valid user ID.');
+                LogManager::instance()->log(LogLevelEnum::$ERROR,'Context must contain a valid user ID.');
                 throw new \Error('TypeError: Invalid context');
             }
 
@@ -98,36 +99,36 @@ class VWOClient implements IVWOClient {
 
             return (new GetFlag())->get($featureKey, $this->settings, $contextModel, $hookManager);
         } catch (\Throwable $error) {
-            LogManager::instance()->error("API - $apiName failed to execute. Error: " . $error->getMessage());
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"API - $apiName failed to execute. Error: " . $error->getMessage());
             return $defaultReturnValue;
         }
     }
 
-    public function trackEvent($eventName = null, $context = null, $eventProperties = []) {
+    public function trackEvent(string $eventName, $context, $eventProperties) {
         $apiName = 'trackEvent';
 
         try {
             $hookManager = new HooksService($this->options);
 
-            LogManager::instance()->debug("API Called: $apiName");
+            LogManager::instance()->log(LogLevelEnum::$DEBUG,"API Called: $apiName");
 
             if (!DataTypeUtil::isString($eventName)) {
-                LogManager::instance()->error("Event name passed to $apiName API is not a valid string.");
+                LogManager::instance()->log(LogLevelEnum::$ERROR,"Event name passed to $apiName API is not a valid string.");
                 throw new \TypeError('TypeError: eventName should be a valid string');
             }
 
             if (!DataTypeUtil::isArray($eventProperties)) {
-                LogManager::instance()->error("Event properties passed to $apiName API are not valid.");
+                LogManager::instance()->log(LogLevelEnum::$ERROR,"Event properties passed to $apiName API are not valid.");
                 throw new \TypeError('TypeError: eventProperties should be an array');
             }
 
             if (!$this->settings) {
-                LogManager::instance()->error('Invalid settings detected.');
+                LogManager::instance()->log(LogLevelEnum::$ERROR,'Invalid settings detected.');
                 throw new \Error('Invalid Settings');
             }
 
             if (!isset($context['id']) || empty($context['id'])) {
-                LogManager::instance()->error('Context must contain a valid user ID.');
+                LogManager::instance()->log(LogLevelEnum::$ERROR,'Context must contain a valid user ID.');
                 throw new \Error('TypeError: Invalid context');
             }
 
@@ -136,29 +137,29 @@ class VWOClient implements IVWOClient {
 
             return (new TrackEvent())->track($this->settings, $eventName, $contextModel, $eventProperties, $hookManager);
         } catch (\Throwable $error) {
-            LogManager::instance()->error("API - $apiName failed to execute. Error: " . $error->getMessage());
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"API - $apiName failed to execute. Error: " . $error->getMessage());
             return [$eventName => false];
         }
     }
 
-    public function setAttribute($attributeKey = null, $attributeValue = null, $context = null) {
+    public function setAttribute(string $attributeKey, string $attributeValue, $context ) {
         $apiName = 'setAttribute';
 
         try {
-            LogManager::instance()->debug("API Called: $apiName");
+            LogManager::instance()->log(LogLevelEnum::$DEBUG,"API Called: $apiName");
 
             if (!DataTypeUtil::isString($attributeKey)) {
-                LogManager::instance()->error("Attribute key passed to $apiName API is not valid.");
+                LogManager::instance()->log(LogLevelEnum::$ERROR,"Attribute key passed to $apiName API is not valid.");
                 throw new \TypeError('TypeError: attributeKey should be a valid string');
             }
 
             if (!DataTypeUtil::isString($attributeValue) && !DataTypeUtil::isNumber($attributeValue) && !DataTypeUtil::isBoolean($attributeValue)) {
-                LogManager::instance()->error("Attribute value passed to $apiName API is not valid.");
+                LogManager::instance()->log(LogLevelEnum::$ERROR,"Attribute value passed to $apiName API is not valid.");
                 throw new \TypeError('TypeError: attributeValue should be a valid string, number, or boolean');
             }
 
             if (!isset($context['id']) || empty($context['id'])) {
-                LogManager::instance()->error('Context must contain a valid user ID.');
+                LogManager::instance()->log(LogLevelEnum::$ERROR,'Context must contain a valid user ID.');
                 throw new \Error('TypeError: Invalid context');
             }
 
@@ -167,7 +168,7 @@ class VWOClient implements IVWOClient {
 
             (new SetAttribute())->setAttribute($this->settings, $attributeKey, $attributeValue, $contextModel);
         } catch (\Throwable $error) {
-            LogManager::instance()->error("API - $apiName failed to execute. Error: " . $error->getMessage());
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"API - $apiName failed to execute. Error: " . $error->getMessage());
         }
     }
 }

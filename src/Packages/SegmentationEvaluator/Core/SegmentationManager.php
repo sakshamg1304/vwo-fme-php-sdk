@@ -28,6 +28,7 @@ use vwo\Models\FeatureModel;
 use vwo\Models\User\ContextVWOModel;
 use vwo\Services\SettingsService;
 use vwo\Utils\DataTypeUtil;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class SegmentationManager {
     private static $instance;
@@ -48,7 +49,7 @@ class SegmentationManager {
      * Attaches an evaluator to the manager, or creates a new one if none is provided.
      * @param SegmentEvaluator|null $evaluator Optional evaluator to attach.
      */
-    public function attachEvaluator($evaluator = null): void {
+    public function attachEvaluator($evaluator = null) {
         $this->evaluator = $evaluator ?? new SegmentEvaluator();
     }
 
@@ -58,7 +59,7 @@ class SegmentationManager {
      * @param FeatureModel $feature The feature data including segmentation needs.
      * @param ContextModel $context The context data for the evaluation.
      */
-    public function setContextualData($settings, $feature, $context): void {
+    public function setContextualData($settings, $feature, $context) {
         $this->attachEvaluator(); // Ensure a fresh evaluator instance
         $this->evaluator->settings = $settings; // Set settings in evaluator
         $this->evaluator->context = $context; // Set context in evaluator
@@ -87,7 +88,7 @@ class SegmentationManager {
                     $vwoData = GatewayServiceUtil::getFromGatewayService($params, UrlEnum::GET_USER_DATA);
                     $context->setVwo((new ContextVWOModel())->modelFromDictionary($vwoData));
                 } catch (\Exception $err) {
-                    LogManager::instance()->error('Error in setting contextual data for segmentation. Got error: ' . $err->getMessage());
+                    LogManager::instance()->log(LogLevelEnum::$ERROR,'Error in setting contextual data for segmentation. Got error: ' . $err->getMessage());
                 }
             }
         }

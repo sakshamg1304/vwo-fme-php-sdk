@@ -23,6 +23,7 @@ use vwo\Enums\UrlEnum;
 use vwo\Packages\SegmentationEvaluator\Enums\SegmentOperandRegexEnum;
 use vwo\Packages\SegmentationEvaluator\Enums\SegmentOperandValueEnum;
 use vwo\Packages\Logger\Core\LogManager;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class SegmentOperandEvaluator {
 
@@ -46,7 +47,7 @@ class SegmentOperandEvaluator {
         if (preg_match(SegmentOperandRegexEnum::IN_LIST, $operand)) {
             preg_match(SegmentOperandRegexEnum::IN_LIST, $operand, $matches);
             if (!$matches || count($matches) < 2) {
-                LogManager::instance()->error('Invalid inList operand format');
+                LogManager::instance()->log(LogLevelEnum::$ERROR,'Invalid inList operand format');
                 return false;
             }
 
@@ -66,7 +67,7 @@ class SegmentOperandEvaluator {
                 }
                 return $res;
             } catch (\Exception $error) {
-                LogManager::instance()->error('Error while fetching data:'. $error->getMessage());
+                LogManager::instance()->log(LogLevelEnum::$ERROR,'Error while fetching data:'. $error->getMessage());
                 return false;
             }
         } else {
@@ -80,7 +81,7 @@ class SegmentOperandEvaluator {
     }
 
     public function evaluateUserDSL($dslOperandValue, $properties): bool {
-        $properties = (array)($properties);
+        $properties = json_decode(json_encode($properties),true);
         $users = explode(',', $dslOperandValue);
         foreach ($users as $user) {
             if (trim($user) === $properties['_vwoUserId']) {
@@ -93,7 +94,7 @@ class SegmentOperandEvaluator {
     public function evaluateUserAgentDSL($dslOperandValue, $context): bool {
         $operand = $dslOperandValue;
         if (!$context->getUserAgent() || $context->getUserAgent() === null) {
-            LogManager::instance()->info('To evaluate UserAgent segmentation, please provide userAgent in context');
+            LogManager::instance()->log(LogLevelEnum::$INFO,'To evaluate UserAgent segmentation, please provide userAgent in context');
             return false;
         }
         $tagValue = urldecode($context->getUserAgent());

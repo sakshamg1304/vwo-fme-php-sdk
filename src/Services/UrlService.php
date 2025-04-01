@@ -20,6 +20,7 @@ namespace vwo\Services;
 
 use vwo\Enums\UrlEnum;
 use vwo\Packages\Logger\Core\LogManager;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class UrlService
 {
@@ -28,7 +29,7 @@ class UrlService
     private static $port;
     private static $gatewayServiceProtocol = 'https';
 
-    public static function init(array $options = []): void
+    public static function init(array $options = [])
     {
         self::$collectionPrefix = $options['collectionPrefix'] ?? null;
         self::$gatewayServiceUrl = $options['gatewayServiceUrl'] ?? null;
@@ -49,7 +50,7 @@ class UrlService
                 self::$port = $parsedUrl['port'] ?? null;
 
             } catch (\Exception $e) {
-                LogManager::instance()->error('Error parsing web service URL: ' . $e->getMessage());
+                LogManager::instance()->log(LogLevelEnum::$ERROR,'Error parsing web service URL: ' . $e->getMessage());
             }
         }
     }

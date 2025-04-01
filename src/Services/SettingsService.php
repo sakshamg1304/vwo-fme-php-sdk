@@ -24,6 +24,7 @@ use vwo\Packages\Logger\Core\LogManager;
 use vwo\Constants\Constants;
 use vwo\Packages\NetworkLayer\Models\RequestModel;
 use Exception;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 // Defining interface ISettingsService
 interface ISettingsService {
@@ -69,7 +70,7 @@ class SettingsService implements ISettingsService {
         }
 
         self::$instance = $this;
-        LogManager::instance()->debug('Settings Manager initialized');
+        LogManager::instance()->log(LogLevelEnum::$DEBUG,'Settings Manager initialized');
     }
 
     public static function instance(): SettingsService {
@@ -79,17 +80,17 @@ class SettingsService implements ISettingsService {
     private function fetchSettingsAndCacheInStorage() {
         try {
             $settings = $this->fetchSettings();
-            LogManager::instance()->info('Settings fetched successfully');
+            LogManager::instance()->log(LogLevelEnum::$INFO,'Settings fetched successfully');
             return $settings;
         } catch (Exception $e) {
-            LogManager::instance()->error("Settings could not be fetched: " . $e->getMessage());
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"Settings could not be fetched: " . $e->getMessage());
             return null;
         }
     }
 
     public function fetchSettings() {
         if (!$this->sdkKey || !$this->accountId) {
-            LogManager::instance()->error('sdkKey is required for fetching account settings. Aborting!');
+            LogManager::instance()->log(LogLevelEnum::$ERROR,'sdkKey is required for fetching account settings. Aborting!');
             throw new Exception('sdkKey is required for fetching account settings. Aborting!');
         }
 
@@ -117,7 +118,7 @@ class SettingsService implements ISettingsService {
             $response = $networkInstance->get($request);
             return $response->getData();
         } catch (Exception $err) {
-            LogManager::instance()->error("Error occurred while fetching settings: {$err->getMessage()}");
+            LogManager::instance()->log(LogLevelEnum::$ERROR,"Error occurred while fetching settings: {$err->getMessage()}");
             throw $err;
         }
     }

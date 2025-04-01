@@ -21,6 +21,7 @@ namespace vwo\Services;
 use vwo\Enums\StorageEnum;
 use vwo\Packages\Storage\Storage;
 use vwo\Packages\Logger\Core\LogManager;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class StorageService
 {
@@ -45,11 +46,11 @@ class StorageService
                 if ($data !== null) {
                     return $data;
                 } else {
-                    LogManager::instance()->info("No data found in storage for feature key: " . $featureKey);
+                    LogManager::instance()->log(LogLevelEnum::$INFO,"No data found in storage for feature key: " . $featureKey);
                     return StorageEnum::NO_DATA_FOUND;
                 }
             } catch (\Exception $e) {
-                LogManager::instance()->error("Error occurred while retrieving data: " . $e->getMessage());
+                LogManager::instance()->log(LogLevelEnum::$ERROR,"Error occurred while retrieving data: " . $e->getMessage());
                 return StorageEnum::NO_DATA_FOUND;
             }
         }
@@ -71,7 +72,7 @@ class StorageService
             try {
                 return $storageInstance->set($data);
             } catch (\Exception $e) {
-                LogManager::instance()->error("Error occurred while storing data: " . $e->getMessage());
+                LogManager::instance()->log(LogLevelEnum::$ERROR,"Error occurred while storing data: " . $e->getMessage());
                 return false;
             }
         }

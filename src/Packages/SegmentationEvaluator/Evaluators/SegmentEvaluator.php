@@ -27,6 +27,7 @@ use vwo\Packages\Logger\Core\LogManager;
 use vwo\Packages\SegmentationEvaluator\Enums\SegmentOperatorValueEnum;
 use vwo\Packages\SegmentationEvaluator\Evaluators\SegmentOperandEvaluator;
 use vwo\Utils\DataTypeUtil;
+use vwo\Packages\Logger\Enums\LogLevelEnum;
 
 class SegmentEvaluator implements Segmentation
 {
@@ -110,7 +111,7 @@ class SegmentEvaluator implements Segmentation
                             }
                             return $result;
                         } else {
-                            LogManager::instance()->error("Feature not found with featureIdKey: $featureIdKey");
+                            LogManager::instance()->log(LogLevelEnum::$ERROR,"Feature not found with featureIdKey: $featureIdKey");
                             return false;
                         }
                     }
@@ -122,7 +123,7 @@ class SegmentEvaluator implements Segmentation
                     $uaParserResult = $this->checkUserAgentParser($uaParserMap);
                     return $uaParserResult;
                 } catch (\Exception $err) {
-                    LogManager::instance()->error($err->getMessage());
+                    LogManager::instance()->log(LogLevelEnum::$ERROR,$err->getMessage());
                 }
             }
 
@@ -151,7 +152,7 @@ class SegmentEvaluator implements Segmentation
         return true;
     }
 
-    public function addLocationValuesToMap($dsl, &$locationMap): void
+    public function addLocationValuesToMap($dsl, &$locationMap)
     {
         if (isset($dsl->{SegmentOperatorValueEnum::COUNTRY})) {
             $locationMap[SegmentOperatorValueEnum::COUNTRY] = $dsl->{SegmentOperatorValueEnum::COUNTRY};
@@ -169,7 +170,7 @@ class SegmentEvaluator implements Segmentation
         $ipAddress = $this->context->getIpAddress(); // Use the getter method
 
         if (empty($ipAddress)) {
-            LogManager::instance()->info('To evaluate location pre-segmentation, please pass ipAddress in the context object');
+            LogManager::instance()->log(LogLevelEnum::$INFO,'To evaluate location pre-segmentation, please pass ipAddress in the context object');
             return false;
         }
 
@@ -185,7 +186,7 @@ class SegmentEvaluator implements Segmentation
         $userAgent = $this->context->getUserAgent(); // Use the getter method
 
         if (empty($userAgent)) {
-            LogManager::instance()->info('To evaluate user agent related segments, please pass userAgent in the context object');
+            LogManager::instance()->log(LogLevelEnum::$INFO,'To evaluate user agent related segments, please pass userAgent in the context object');
             return false;
         }
 
