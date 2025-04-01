@@ -81,7 +81,7 @@ class SegmentOperandEvaluator {
     }
 
     public function evaluateUserDSL($dslOperandValue, $properties): bool {
-        $properties = (array)($properties);
+        $properties = json_decode(json_encode($properties),true);
         $users = explode(',', $dslOperandValue);
         foreach ($users as $user) {
             if (trim($user) === $properties['_vwoUserId']) {

@@ -175,24 +175,51 @@ class CampaignUtil
      */
     public static function getGroupDetailsIfCampaignPartOfIt($settings, $campaignId, $variationId = null)
     {
+        // Force campaignId to be a string to ensure proper comparison
+        $campaignId = (string) $campaignId;
+
+        // Determine the campaign key to check (with variation if provided)
         $campaignToCheck = $campaignId;
 
         if ($variationId !== null) {
-            $campaignToCheck = "{$campaignId}_{$variationId}";
+            $campaignToCheck .= '_' . $variationId;
         }
 
-        // Convert stdClass to array
-        $campaignGroups = (array) $settings->getCampaignGroups();
+        // Trim any whitespace to avoid hidden characters causing mismatches
+        $campaignToCheck = trim($campaignToCheck);
+        $campaignToCheck = (string)($campaignToCheck);
 
-        if ($campaignGroups && isset($campaignGroups[$campaignToCheck])) {
-            $groupDetails = $settings->getGroups();
-            $groupId = $campaignGroups[$campaignToCheck];
-            $groupName = $groupDetails->{$groupId}->name; // Accessing as an object property
-    
-            return [
-                'groupId' => $groupId,
-                'groupName' => $groupName,
-            ];
+
+        // Get campaign groups as an array
+        $campaignGroups = $settings->getCampaignGroups();
+        $campaignGroups = json_decode(json_encode($campaignGroups), true);
+
+        // Check if the campaign exists in the groups mapping using array_key_exists
+        if (!empty($campaignGroups) && isset($campaignGroups[$campaignToCheck])) {
+
+            // If the campaign exists, get the corresponding group ID
+            $groupId = $campaignGroups[$campaignToCheck];  // This gets the correct value from the original array
+            // Get group details as an array
+            $groupDetails = json_decode(json_encode($settings->getGroups()), true);
+            $groupId = (string) $groupId;
+
+            // Check if the group ID exists in the group details
+            if (isset($groupDetails[$groupId])) {
+                $group = $groupDetails[$groupId];
+                $groupName = '';
+
+                // Support both object and array access for group name
+                if (is_object($group) && isset($group->name)) {
+                    $groupName = $group->name;
+                } elseif (is_array($group) && isset($group['name'])) {
+                    $groupName = $group['name'];
+                }
+
+                return array(
+                    'groupId' => $groupId,
+                    'groupName' => $groupName
+                );
+            }
         }
         return [];
     }
@@ -242,10 +269,12 @@ class CampaignUtil
      */
     public static function getCampaignsByGroupId($settings, $groupId)
     {
-        $campaignGroups = (array)$settings->getGroups();
+        $campaignGroups = json_decode(json_encode($settings->getGroups()), true);
+        var_dump("campagin grps");
+        var_dump($campaignGroups);
         $group = $campaignGroups[$groupId] ?? null;
         if ($group) {
-            return $group->campaigns;
+            return $group["campaigns"];
         } else {
             return [];
         }
@@ -266,7 +295,7 @@ class CampaignUtil
             list($campaignId, $variationId) = array_pad(explode('_', $campaign), 2, null);
 
             foreach ($settings->getFeatures() as $feature) {
-                if(in_array($feature->getKey(), $featureKeys)){
+                if (in_array($feature->getKey(), $featureKeys)) {
                     continue;
                 }
                 foreach ($feature->getRules() as $rule) {
@@ -371,7 +400,8 @@ class CampaignUtil
             $variation->setStartRange(1);
             $variation->setEndRange($endRange);
 
-            LogManager::instance()->log(LogLevelEnum::$INFO,
+            LogManager::instance()->log(
+                LogLevelEnum::$INFO,
                 sprintf(
                     "VARIATION_RANGE_ALLOCATION: Variation:%s of Campaign:%s got bucketing range: ( 1 - %s )",
                     $variation->getKey(),

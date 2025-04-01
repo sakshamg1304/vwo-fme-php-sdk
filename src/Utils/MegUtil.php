@@ -251,7 +251,7 @@ class MegUtil
         return [
             'eligibleCampaigns' => $eligibleCampaigns,
             'eligibleCampaignsWithStorage' => $eligibleCampaignsWithStorage,
-            'inEligibleCampaigns' => $inEligibleCampaigns,
+            'inEligibleCampaigns' => $inEligibleCampaigns
         ];
     }
 
