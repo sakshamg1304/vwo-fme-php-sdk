@@ -102,7 +102,7 @@ class TrackEvent implements ITrack
             $settings,
             $context,
             $eventName,
-            $eventProperties,
+            $eventProperties
         );
 
         // Send the prepared payload via POST API request
