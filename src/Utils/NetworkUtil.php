@@ -854,7 +854,7 @@ class NetworkUtil {
         $holdoutId,
         $variationId,
         $context,
-        $featureId,
+        $featureId
     ) {   
 
         $userId = $context->getId();
@@ -864,7 +864,7 @@ class NetworkUtil {
             $context->getSessionId(),
             $eventName,
             $context->getUserAgent(),
-            $context->getIpAddress(),
+            $context->getIpAddress()
         );
 
         $properties['d']['event']['props']['id'] = $holdoutId;
