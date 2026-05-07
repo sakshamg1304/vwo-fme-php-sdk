@@ -127,7 +127,7 @@ class GetFlag
                         $serviceContainer,
                         $feature,
                         $context,
-                        $storedData,
+                        $storedData
                     );
                     $matchedHoldouts = $holdoutResult['matchedHoldouts'];
                     $notMatchedHoldouts = $holdoutResult['notMatchedHoldouts'];
@@ -150,7 +150,7 @@ class GetFlag
                             'notInHoldoutId' => $updatedNotInHoldoutIds,
                         ],
                         $storageService,
-                        $serviceContainer,
+                        $serviceContainer
                     );
 
                     // send the impression for the new holdouts
@@ -217,7 +217,7 @@ class GetFlag
                         $context,
                         $decision,
                         $storedData,
-                        $storageService,
+                        $storageService
                     );
                 
                 // push the updated not in holdout ids to the notInHoldoutIds array
