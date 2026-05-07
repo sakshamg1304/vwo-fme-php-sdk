@@ -46,7 +46,7 @@ use vwo\Enums\CampaignTypeEnum;
 class NetworkUtil {
   private $serviceContainer;
 
-  public function __construct(?ServiceContainer $serviceContainer = null)
+  public function __construct(ServiceContainer $serviceContainer = null)
   {
     $this->serviceContainer = $serviceContainer;
   }

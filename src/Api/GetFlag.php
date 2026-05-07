@@ -134,12 +134,18 @@ class GetFlag
                     $holdoutPayloads = $holdoutResult['holdoutPayloads'];
                     
                     // updatedHoldoutIds is the array of holdout ids for which user became part of the holdouts
-                    $updatedHoldoutIds = [...$storedIsInHoldoutId, ...array_map(function ($holdout) {
-                        return $holdout->getId();
-                    }, $matchedHoldouts)];
-                    $updatedNotInHoldoutIds = [...$storedNotInHoldoutId, ...array_map(function ($holdout) {
-                        return $holdout->getId();
-                    }, $notMatchedHoldouts)];
+                    $updatedHoldoutIds = array_merge(
+                        (array) $storedIsInHoldoutId,
+                        array_map(function ($holdout) {
+                            return $holdout->getId();
+                        }, $matchedHoldouts)
+                    );
+                    $updatedNotInHoldoutIds = array_merge(
+                        (array) $storedNotInHoldoutId,
+                        array_map(function ($holdout) {
+                            return $holdout->getId();
+                        }, $notMatchedHoldouts)
+                    );
                     
                     // store the updated holdout ids in storage and push the updated not in holdout ids to the notInHoldoutIds array
                     (new StorageDecorator())->setDataInStorage(
@@ -221,7 +227,7 @@ class GetFlag
                     );
                 
                 // push the updated not in holdout ids to the notInHoldoutIds array
-                $notInHoldoutIds = [...$notInHoldoutIds, ...$updatedNotInHoldoutIds];
+                $notInHoldoutIds = array_merge($notInHoldoutIds, (array) $updatedNotInHoldoutIds);
 
                 $isEnabled = true;
                 $shouldCheckForExperimentsRules = true;
